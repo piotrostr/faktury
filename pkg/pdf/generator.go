@@ -18,12 +18,13 @@ func NewGenerator(cfg *config.Config) *Generator {
 
 func (g *Generator) GenerateInvoice(project *invoice.Project) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddUTF8Font("SF", "", "SFMono.ttf")
+	pdf.SetFont("SF", "", 16)
+
 	pdf.AddPage()
 
-	pdf.SetFont("Arial", "B", 16)
 	pdf.Cell(40, 10, "Faktura")
 
-	pdf.SetFont("Arial", "", 12)
 	pdf.Ln(10)
 	pdf.Cell(0, 6, fmt.Sprintf("Sprzedawca: %s", g.config.CompanyName))
 	pdf.Ln(6)
