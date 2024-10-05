@@ -19,39 +19,51 @@ func NewGenerator(cfg *config.Config) *Generator {
 func (g *Generator) GenerateInvoice(project *invoice.Project) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddUTF8Font("SF", "", "SFMono.ttf")
-	pdf.SetFont("SF", "", 16)
+	pdf.SetFont("SF", "", 12)
 
 	pdf.AddPage()
 
-	pdf.Cell(40, 10, "Faktura")
+	// Set margins
+	pdf.SetMargins(20, 20, 20)
+	pdf.SetAutoPageBreak(true, 20)
 
-	pdf.Ln(10)
-	pdf.Cell(0, 6, fmt.Sprintf("Sprzedawca: %s", g.config.CompanyName))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("NIP: %s", g.config.NIP))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("REGON: %s", g.config.REGON))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("Email: %s", g.config.Email))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("Telefon: %s", g.config.Phone))
+	// Helper function for MultiCell
+	writeMultiCell := func(text string) {
+		pdf.MultiCell(0, 6, text, "", "", false)
+		pdf.Ln(2)
+	}
 
-	pdf.Ln(10)
-	pdf.Cell(0, 6, fmt.Sprintf("Nabywca: %s", project.Client.Name))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("Adres: %s", project.Client.Address))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("NIP: %s", project.Client.NIP))
+	pdf.SetFont("SF", "", 16)
+	writeMultiCell("Faktura")
+	pdf.Ln(5)
 
-	pdf.Ln(10)
-	pdf.Cell(0, 6, fmt.Sprintf("Tytuł projektu: %s", project.Title))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("Koszt: %.2f PLN", project.Cost))
-	pdf.Ln(6)
-	pdf.Cell(0, 6, fmt.Sprintf("Deliverable: %s", project.Deliverable))
+	pdf.SetFont("SF", "", 12)
 
-	pdf.Ln(10)
-	pdf.Cell(0, 6, "Usługa kwalifikowana do IP Box")
+	pdf.SetFont("SF", "U", 13)
+	writeMultiCell("Sprzedawca:")
+	pdf.SetFont("SF", "", 12)
+	writeMultiCell(g.config.CompanyName)
+	writeMultiCell(fmt.Sprintf("NIP: %s", g.config.NIP))
+	writeMultiCell(fmt.Sprintf("REGON: %s", g.config.REGON))
+	writeMultiCell(fmt.Sprintf("Email: %s", g.config.Email))
+	writeMultiCell(fmt.Sprintf("Telefon: %s", g.config.Phone))
+	pdf.Ln(5)
+
+	pdf.SetFont("SF", "U", 13)
+	writeMultiCell("Nabywca:")
+	pdf.SetFont("SF", "", 12)
+	writeMultiCell(project.Client.Name)
+	writeMultiCell(fmt.Sprintf("Adres: %s", project.Client.Address))
+	writeMultiCell(fmt.Sprintf("NIP: %s", project.Client.NIP))
+	pdf.Ln(5)
+
+	pdf.SetFont("SF", "U", 13)
+	writeMultiCell("Projekt:")
+	pdf.SetFont("SF", "", 12)
+	writeMultiCell(project.Title)
+	writeMultiCell(fmt.Sprintf("Koszt: %.2f PLN", project.Cost))
+	writeMultiCell(fmt.Sprintf("Deliverable: %s", project.Deliverable))
+	pdf.Ln(5)
 
 	err := pdf.OutputFileAndClose("invoice.pdf")
 	if err != nil {

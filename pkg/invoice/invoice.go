@@ -16,6 +16,7 @@ type Client struct {
 	Name    string `json:"name"`
 	Address string `json:"address"`
 	NIP     string `json:"nip"`
+	REGON   string `json:"regon"`
 }
 
 func LoadProject(filename string) *Project {
